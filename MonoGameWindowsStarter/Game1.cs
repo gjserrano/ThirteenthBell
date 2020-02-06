@@ -12,12 +12,14 @@ namespace MonoGameWindowsStarter
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Ball ball;
-        Paddle paddle;
+        Bullet bullet;
+        Player player;
+
+        Color color = Color.Tan;
 
         public Random Random = new Random();
-        
-        
+
+
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
 
@@ -25,8 +27,8 @@ namespace MonoGameWindowsStarter
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            paddle = new Paddle(this);
-            ball = new Ball(this);
+            bullet = new Bullet(this);
+            player = new Player(this);
         }
 
         /// <summary>
@@ -41,8 +43,8 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferWidth = 1042;
             graphics.PreferredBackBufferHeight = 768;
             graphics.ApplyChanges();
-            ball.Initialize();
-            paddle.Initialize();
+            bullet.Initialize();
+            player.Initialize();
             base.Initialize();
         }
 
@@ -54,8 +56,8 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            ball.LoadContent(Content);
-            paddle.LoadContent(Content);
+            bullet.LoadContent(Content);
+            player.LoadContent(Content);
         }
 
         /// <summary>
@@ -82,14 +84,17 @@ namespace MonoGameWindowsStarter
             if (newKeyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
-            paddle.Update(gameTime);
-            ball.Update(gameTime);
+            bullet.Update(gameTime);
+            player.Update(gameTime);
 
-            if(paddle.Bounds.CollidesWith(ball.Bounds)) {
-                ball.Velocity.X *= -1;
-                var delta =  (paddle.Bounds.X + paddle.Bounds.Width) - (ball.Bounds.X - ball.Bounds.Radius);
-                ball.Bounds.X += 2*delta;
+            if (player.Bounds.CollidesWith(bullet.Bounds))
+            {
+                bullet.Bounds.X = 2000;
+                bullet.Bounds.Y = (float)Random.Next(768);
+                color = Color.PaleVioletRed;
             }
+            else
+                color = Color.Tan;
 
             // TODO: Add your update logic here
 
@@ -103,14 +108,13 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(color);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
+            bullet.Draw(spriteBatch);
+            player.Draw(spriteBatch);
 
-            ball.Draw(spriteBatch);
-            paddle.Draw(spriteBatch);
-            
             spriteBatch.End();
 
             base.Draw(gameTime);

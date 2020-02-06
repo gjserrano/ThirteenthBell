@@ -11,9 +11,9 @@ using Microsoft.Xna.Framework.Content;
 namespace MonoGameWindowsStarter
 {
     /// <summary>
-    /// A class representing a paddle
+    /// A class representing a bullet
     /// </summary>
-    public class Paddle
+    public class Bullet
     {
         /// <summary>
         /// The game object
@@ -21,7 +21,7 @@ namespace MonoGameWindowsStarter
         Game1 game;
 
         /// <summary>
-        /// This paddle's bounds
+        /// This bullet's bounds
         /// </summary>
         public BoundingRectangle Bounds;
 
@@ -30,11 +30,13 @@ namespace MonoGameWindowsStarter
         /// </summary>
         Texture2D texture;
 
+        Random Random = new Random();
+
         /// <summary>
-        /// Creates a paddle
+        /// Creates a bullet
         /// </summary>
-        /// <param name="game">The game this paddle belongs to</param>
-        public Paddle(Game1 game)
+        /// <param name="game">The game this bullet belongs to</param>
+        public Bullet(Game1 game)
         {
             this.game = game;
         }
@@ -45,64 +47,45 @@ namespace MonoGameWindowsStarter
         /// </summary>
         public void Initialize()
         {
-            Bounds.Width = 25;
-            Bounds.Height = 200;
-            Bounds.X = 0;
+            Bounds.Width = 200;
+            Bounds.Height = 50;
+            Bounds.X = 1000;
             Bounds.Y = game.GraphicsDevice.Viewport.Height / 2 - Bounds.Height / 2;
         }
 
         /// <summary>
-        /// Loads the paddle's content
+        /// Loads the bullet's content
         /// </summary>
         /// <param name="content">The ContentManager to use</param>
         public void LoadContent(ContentManager content)
         {
-            texture = content.Load<Texture2D>("pixel");
+            texture = content.Load<Texture2D>("bulletLeft");
         }
 
         /// <summary>
-        /// Updates the paddle
+        /// Updates the bullet
         /// </summary>
         /// <param name="gameTime">The game's GameTime</param>
         public void Update(GameTime gameTime)
         {
-            var keyboardState = Keyboard.GetState();
+            Bounds.X -= 20;
 
-            // Move the paddle up if the up key is pressed
-            if (keyboardState.IsKeyDown(Keys.Up))
+            if (Bounds.X + Bounds.Width < 0)
             {
-                // move up
-                Bounds.Y -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            }
-
-            // Move the paddle down if the down key is pressed
-            if (keyboardState.IsKeyDown(Keys.Down))
-            {
-                // move down
-                Bounds.Y += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            }
-
-            // Stop the paddle from going off-screen
-            if (Bounds.Y < 0)
-            {
-                Bounds.Y = 0;
-            }
-            if (Bounds.Y > game.GraphicsDevice.Viewport.Height - Bounds.Height)
-            {
-                Bounds.Y = game.GraphicsDevice.Viewport.Height - Bounds.Height;
+                Bounds.X = 2000; Bounds.Y = (float)Random.Next(768);
             }
         }
 
         /// <summary>
-        /// Draw the paddle
+        /// Draw the bullet
         /// </summary>
         /// <param name="spriteBatch">
-        /// The SpriteBatch to draw the paddle with.  This method should 
+        /// The SpriteBatch to draw the bullet with.  This method should 
         /// be invoked between SpriteBatch.Begin() and SpriteBatch.End() calls.
         /// </param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, Bounds, Color.Green);
+            spriteBatch.Draw(texture, Bounds, Color.White);
         }
     }
 }
