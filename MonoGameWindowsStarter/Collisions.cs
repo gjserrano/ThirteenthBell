@@ -28,6 +28,14 @@ namespace MonoGameWindowsStarter
             return (a.X + a.Width < b.X + (2 * b.Width) && (a.Y <= b.Y + b.Height && !(a.Y < b.Y)));
         }
 
+        public static bool CollidesBottom(this BoundingRectangle player, BoundingRectangle bullet)
+        {
+            //return (player.Y + player.Height > bullet.Y && (player.X < bullet.X + bullet.Width && !(player.X < bullet.X)));
+            return (bullet.X + bullet.Width > player.X + 45 && bullet.Y < player.Y + player.Height - 45 && bullet.X < player.X + player.Width - 45);
+            //Enumerable.Range((int)player.X, (int)player.X + (int)player.Width).Contains((int)bullet.X);
+            //return (player.Y + player.Height > bullet.Y && (Enumerable.Range((int)player.X, (int)player.X + (int)player.Width).Contains((int)bullet.X)));
+        }
+
         /// <summary>
         /// Detects collisions between this BoundingCircle and another BoundingCircle
         /// </summary>

@@ -83,7 +83,7 @@ namespace MonoGameWindowsStarter
         {
             Bounds.Width = FRAME_WIDTH;
             Bounds.Height = FRAME_HEIGHT;
-            Bounds.X = game.GraphicsDevice.Viewport.Width / 2 - Bounds.Width / 2;
+            Bounds.X = game.GraphicsDevice.Viewport.Width / 2;
             Bounds.Y = 0;
         }
 
@@ -106,12 +106,12 @@ namespace MonoGameWindowsStarter
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Update the player state based on input
-            if (keyboard.IsKeyDown(Keys.Up))
+            /*if (keyboard.IsKeyDown(Keys.Up))
             {
                 state = State.North;
                 Bounds.Y -= delta * PLAYER_SPEED;
-            }
-            else if (keyboard.IsKeyDown(Keys.Left))
+            }*/
+            /*else*/ if (keyboard.IsKeyDown(Keys.Left))
             {
                 state = State.West;
                 Bounds.X -= delta * PLAYER_SPEED;
@@ -121,11 +121,11 @@ namespace MonoGameWindowsStarter
                 state = State.East;
                 Bounds.X += delta * PLAYER_SPEED;
             }
-            else if (keyboard.IsKeyDown(Keys.Down))
+            /*else if (keyboard.IsKeyDown(Keys.Down))
             {
                 state = State.South;
                 Bounds.Y += delta * PLAYER_SPEED;
-            }
+            }*/
             else state = State.Idle;
 
             // Update the player animation timer when the player is moving
@@ -155,7 +155,7 @@ namespace MonoGameWindowsStarter
         /// </param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            // determine the source rectagle of the sprite's current frame
+            // determine the source rectangle of the sprite's current frame
             var source = new Rectangle(
                 frame * FRAME_WIDTH, // X value 
                 (int)state % 4 * FRAME_HEIGHT, // Y value

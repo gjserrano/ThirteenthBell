@@ -50,10 +50,10 @@ namespace MonoGameWindowsStarter
         /// </summary>
         public void Initialize()
         {
-            Bounds.Width = 200;
-            Bounds.Height = 50;
-            Bounds.X = 2000;
-            Bounds.Y = game.GraphicsDevice.Viewport.Height / 2 - Bounds.Height / 2;
+            Bounds.Width = 50;
+            Bounds.Height = 200;
+            Bounds.X = game.GraphicsDevice.Viewport.Width / 2 - Bounds.Height /2 ;
+            Bounds.Y = 1000;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace MonoGameWindowsStarter
         /// <param name="content">The ContentManager to use</param>
         public void LoadContent(ContentManager content)
         {
-            texture = content.Load<Texture2D>("bulletLeft");
+            texture = content.Load<Texture2D>("bulletUp");
             bulletHitFX = content.Load<SoundEffect>("hit_hurt");
         }
 
@@ -72,12 +72,12 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">The game's GameTime</param>
         public void Update(GameTime gameTime)
         {
-            Bounds.X -= 14;
+            Bounds.Y -= 14;
 
-            if (Bounds.X + Bounds.Width < 0)
+            if (Bounds.Y + Bounds.Height < 0)
             {
-                Bounds.X = 2000; //Bounds.Y = (float)Random.Next(768);
-                Bounds.Y = 200;
+                Bounds.X = game.GraphicsDevice.Viewport.Width / 2 - Bounds.Height / 2 + 100;
+                Bounds.Y = 1000;
             }
         }
 

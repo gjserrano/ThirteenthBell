@@ -89,12 +89,12 @@ namespace MonoGameWindowsStarter
             bullet.Update(gameTime);
             player.Update(gameTime);
 
-            if (bullet.Bounds.CollidesRight(player.Bounds))
+            if (player.Bounds.CollidesBottom(bullet.Bounds))
             {
                 //bullet.Bounds.X = (float)Random.Next(graphics.PreferredBackBufferWidth - (int)bullet.Bounds.Width);
                 //bullet.Bounds.Y = graphics.PreferredBackBufferHeight + bullet.Bounds.Height;
-                bullet.Bounds.X = 2000;
-                bullet.Bounds.Y = 200;
+                //bullet.Bounds.X = 2000;
+                //bullet.Bounds.Y = 200;
                 color = Color.PaleVioletRed;
                 bullet.bulletHitFX.Play();
             }
