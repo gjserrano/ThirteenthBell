@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
 
 namespace MonoGameWindowsStarter
 {
@@ -32,6 +33,8 @@ namespace MonoGameWindowsStarter
 
         Random Random = new Random();
 
+        public SoundEffect bulletHitFX;
+
         /// <summary>
         /// Creates a bullet
         /// </summary>
@@ -49,7 +52,7 @@ namespace MonoGameWindowsStarter
         {
             Bounds.Width = 200;
             Bounds.Height = 50;
-            Bounds.X = 1000;
+            Bounds.X = 2000;
             Bounds.Y = game.GraphicsDevice.Viewport.Height / 2 - Bounds.Height / 2;
         }
 
@@ -60,6 +63,7 @@ namespace MonoGameWindowsStarter
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("bulletLeft");
+            bulletHitFX = content.Load<SoundEffect>("hit_hurt");
         }
 
         /// <summary>
@@ -68,11 +72,12 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">The game's GameTime</param>
         public void Update(GameTime gameTime)
         {
-            Bounds.X -= 20;
+            Bounds.X -= 14;
 
             if (Bounds.X + Bounds.Width < 0)
             {
-                Bounds.X = 2000; Bounds.Y = (float)Random.Next(768);
+                Bounds.X = 2000; //Bounds.Y = (float)Random.Next(768);
+                Bounds.Y = 200;
             }
         }
 

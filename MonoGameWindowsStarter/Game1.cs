@@ -19,6 +19,7 @@ namespace MonoGameWindowsStarter
 
         public Random Random = new Random();
 
+        SpriteFont spriteFont;
 
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
@@ -40,7 +41,7 @@ namespace MonoGameWindowsStarter
         protected override void Initialize()
         {
             // Set the game screen size
-            graphics.PreferredBackBufferWidth = 1042;
+            graphics.PreferredBackBufferWidth = 1024;
             graphics.PreferredBackBufferHeight = 768;
             graphics.ApplyChanges();
             bullet.Initialize();
@@ -56,6 +57,7 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteFont = Content.Load<SpriteFont>("defaultFont");
             bullet.LoadContent(Content);
             player.LoadContent(Content);
         }
@@ -87,11 +89,14 @@ namespace MonoGameWindowsStarter
             bullet.Update(gameTime);
             player.Update(gameTime);
 
-            if (player.Bounds.CollidesWith(bullet.Bounds))
+            if (bullet.Bounds.CollidesRight(player.Bounds))
             {
+                //bullet.Bounds.X = (float)Random.Next(graphics.PreferredBackBufferWidth - (int)bullet.Bounds.Width);
+                //bullet.Bounds.Y = graphics.PreferredBackBufferHeight + bullet.Bounds.Height;
                 bullet.Bounds.X = 2000;
-                bullet.Bounds.Y = (float)Random.Next(768);
+                bullet.Bounds.Y = 200;
                 color = Color.PaleVioletRed;
+                bullet.bulletHitFX.Play();
             }
             else
                 color = Color.Tan;
@@ -99,6 +104,8 @@ namespace MonoGameWindowsStarter
             // TODO: Add your update logic here
 
             oldKeyboardState = newKeyboardState;
+            //var size = spriteFont.MeasureString("Use Arrow Keys to Navigate");
+
             base.Update(gameTime);
         }
 
@@ -112,6 +119,14 @@ namespace MonoGameWindowsStarter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
+
+            spriteBatch.DrawString(
+                spriteFont,
+                "Use Arrow Keys to Move\nDon't get hit!!",
+                new Vector2(graphics.PreferredBackBufferWidth/2 - 100, graphics.PreferredBackBufferHeight - 200),
+                Color.White
+                );
+            //spriteBatch.DrawString()
             bullet.Draw(spriteBatch);
             player.Draw(spriteBatch);
 

@@ -23,6 +23,11 @@ namespace MonoGameWindowsStarter
                   || a.Y + a.Height < b.Y);
         }
 
+        public static bool CollidesRight(this BoundingRectangle a, BoundingRectangle b)
+        {
+            return (a.X + a.Width < b.X + (2 * b.Width) && (a.Y <= b.Y + b.Height && !(a.Y < b.Y)));
+        }
+
         /// <summary>
         /// Detects collisions between this BoundingCircle and another BoundingCircle
         /// </summary>

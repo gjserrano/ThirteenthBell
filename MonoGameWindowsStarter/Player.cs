@@ -15,6 +15,15 @@ namespace MonoGameWindowsStarter
     /// </summary>
     public class Player
     {
+        enum State
+        {
+            South = 2,
+            East = 3,
+            West = 1,
+            North = 0,
+            Idle = 2,
+        }
+
         /// <summary>
         /// The game object
         /// </summary>
@@ -31,12 +40,39 @@ namespace MonoGameWindowsStarter
         Texture2D texture;
 
         /// <summary>
+        /// How quickly the animation should advance frames (1/8 second as milliseconds)
+        /// </summary>
+        const int ANIMATION_FRAME_RATE = 64;
+
+        /// <summary>
+        /// How quickly the player should move
+        /// </summary>
+        const float PLAYER_SPEED = 250;
+
+        /// <summary>
+        /// The width of the animation frames
+        /// </summary>
+        const int FRAME_WIDTH = 130;
+
+        /// <summary>
+        /// The hieght of the animation frames
+        /// </summary>
+        const int FRAME_HEIGHT = 130;
+
+        TimeSpan timer;
+        State state;
+        int frame;
+
+        /// <summary>
         /// Creates a player
         /// </summary>
         /// <param name="game">The game this player belongs to</param>
         public Player(Game1 game)
         {
             this.game = game;
+            timer = new TimeSpan(0);
+            Bounds = new BoundingRectangle();
+            state = State.Idle;
         }
 
         /// <summary>
@@ -45,10 +81,10 @@ namespace MonoGameWindowsStarter
         /// </summary>
         public void Initialize()
         {
-            Bounds.Width = 200;
-            Bounds.Height = 200;
-            Bounds.X = 0;
-            Bounds.Y = game.GraphicsDevice.Viewport.Height / 2 - Bounds.Height / 2;
+            Bounds.Width = FRAME_WIDTH;
+            Bounds.Height = FRAME_HEIGHT;
+            Bounds.X = game.GraphicsDevice.Viewport.Width / 2 - Bounds.Width / 2;
+            Bounds.Y = 0;
         }
 
         /// <summary>
@@ -57,7 +93,7 @@ namespace MonoGameWindowsStarter
         /// <param name="content">The ContentManager to use</param>
         public void LoadContent(ContentManager content)
         {
-            texture = content.Load<Texture2D>("Gunslinger");
+            texture = content.Load<Texture2D>("C3ZwL2");
         }
 
         /// <summary>
@@ -66,51 +102,48 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">The game's GameTime</param>
         public void Update(GameTime gameTime)
         {
-            var keyboardState = Keyboard.GetState();
+            KeyboardState keyboard = Keyboard.GetState();
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Move the paddle up if the up key is pressed
-            if (keyboardState.IsKeyDown(Keys.Up))
+            // Update the player state based on input
+            if (keyboard.IsKeyDown(Keys.Up))
             {
-                // move up
-                Bounds.Y -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                state = State.North;
+                Bounds.Y -= delta * PLAYER_SPEED;
+            }
+            else if (keyboard.IsKeyDown(Keys.Left))
+            {
+                state = State.West;
+                Bounds.X -= delta * PLAYER_SPEED;
+            }
+            else if (keyboard.IsKeyDown(Keys.Right))
+            {
+                state = State.East;
+                Bounds.X += delta * PLAYER_SPEED;
+            }
+            else if (keyboard.IsKeyDown(Keys.Down))
+            {
+                state = State.South;
+                Bounds.Y += delta * PLAYER_SPEED;
+            }
+            else state = State.Idle;
+
+            // Update the player animation timer when the player is moving
+            if (state != State.Idle) timer += gameTime.ElapsedGameTime;
+
+            // Determine the frame should increase.  Using a while 
+            // loop will accomodate the possiblity the animation should 
+            // advance more than one frame.
+            while (timer.TotalMilliseconds > ANIMATION_FRAME_RATE)
+            {
+                // increase by one frame
+                frame++;
+                // reduce the timer by one frame duration
+                timer -= new TimeSpan(0, 0, 0, 0, ANIMATION_FRAME_RATE);
             }
 
-            // Move the paddle down if the down key is pressed
-            if (keyboardState.IsKeyDown(Keys.Down))
-            {
-                // move down
-                Bounds.Y += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            }
-
-            // Move the player left if the left key is pressed
-            if (keyboardState.IsKeyDown(Keys.Left))
-            {
-                Bounds.X -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            }
-
-            // Move the player right if the left key is pressed
-            if (keyboardState.IsKeyDown(Keys.Right))
-            {
-                Bounds.X += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            }
-
-            // Stop the player from going off-screen
-            if (Bounds.Y < 0)
-            {
-                Bounds.Y = 0;
-            }
-            if (Bounds.Y > game.GraphicsDevice.Viewport.Height - Bounds.Height)
-            {
-                Bounds.Y = game.GraphicsDevice.Viewport.Height - Bounds.Height;
-            }
-            if (Bounds.X < 0)
-            {
-                Bounds.X = 0;
-            }
-            if (Bounds.X > game.GraphicsDevice.Viewport.Width - Bounds.Width)
-            {
-                Bounds.X = game.GraphicsDevice.Viewport.Width - Bounds.Width;
-            }
+            // Keep the frame within bounds (there are four frames)
+            frame %= 4;
         }
 
         /// <summary>
@@ -122,7 +155,22 @@ namespace MonoGameWindowsStarter
         /// </param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, Bounds, Color.White);
+            // determine the source rectagle of the sprite's current frame
+            var source = new Rectangle(
+                frame * FRAME_WIDTH, // X value 
+                (int)state % 4 * FRAME_HEIGHT, // Y value
+                FRAME_WIDTH, // Width 
+                FRAME_HEIGHT // Height
+                );
+
+            // render the sprite
+            spriteBatch.Draw(texture, Bounds, source, Color.White);
+
+            // render the sprite's coordinates in the upper-right-hand corner of the screen
+            //spriteBatch.DrawString(font, $"X:{position.X} Y:{position.Y}", Vector2.Zero, Color.White);
+            //spriteBatch.Draw(texture, Bounds, Color.White);
         }
     }
 }
+
+
