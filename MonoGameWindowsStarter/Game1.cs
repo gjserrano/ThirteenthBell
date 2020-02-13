@@ -41,8 +41,8 @@ namespace MonoGameWindowsStarter
         protected override void Initialize()
         {
             // Set the game screen size
-            graphics.PreferredBackBufferWidth = 1024;
-            graphics.PreferredBackBufferHeight = 768;
+            graphics.PreferredBackBufferWidth = 2048;
+            graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
             bullet.Initialize();
             player.Initialize();
@@ -91,10 +91,6 @@ namespace MonoGameWindowsStarter
 
             if (player.Bounds.CollidesBottom(bullet.Bounds))
             {
-                //bullet.Bounds.X = (float)Random.Next(graphics.PreferredBackBufferWidth - (int)bullet.Bounds.Width);
-                //bullet.Bounds.Y = graphics.PreferredBackBufferHeight + bullet.Bounds.Height;
-                //bullet.Bounds.X = 2000;
-                //bullet.Bounds.Y = 200;
                 color = Color.PaleVioletRed;
                 bullet.bulletHitFX.Play();
             }
