@@ -11,15 +11,28 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace MonoGameWindowsStarter
 {
+
+    enum Type
+    {
+        Fast,
+        Bomb,
+        Normal,
+        //Teleport,
+    }
+
     /// <summary>
     /// A class representing a bullet
     /// </summary>
     public class Bullet
     {
+        Type bulletType;
+
         /// <summary>
         /// The game object
         /// </summary>
         Game1 game;
+
+        int ySpeed = 0;
 
         /// <summary>
         /// This bullet's bounds
@@ -31,7 +44,7 @@ namespace MonoGameWindowsStarter
         /// </summary>
         Texture2D texture;
 
-        Random Random = new Random();
+        Random random = new Random(4);
 
         public SoundEffect bulletHitFX;
 
@@ -39,9 +52,33 @@ namespace MonoGameWindowsStarter
         /// Creates a bullet
         /// </summary>
         /// <param name="game">The game this bullet belongs to</param>
-        public Bullet(Game1 game)
+        public Bullet(Game1 game, int id)
         {
             this.game = game;
+
+            if (id == 1)
+            {
+                bulletType = Type.Normal;
+            }
+            else if (id == 2)
+            {
+                bulletType = Type.Fast;
+            }
+            else if (id == 3)
+                bulletType = Type.Bomb;
+
+            switch (bulletType)
+            {
+                case Type.Normal:
+                    ySpeed = -14;
+                    break;
+                case Type.Fast:
+                    ySpeed = -20;
+                    break;
+                case Type.Bomb:
+                    ySpeed = -5;
+                    break;
+            }
         }
 
         /// <summary>
@@ -52,8 +89,8 @@ namespace MonoGameWindowsStarter
         {
             Bounds.Width = 50;
             Bounds.Height = 200;
-            Bounds.X = game.GraphicsDevice.Viewport.Width / 2 - Bounds.Height /2 ;
-            Bounds.Y = 1000;
+            Bounds.X = ((game.GraphicsDevice.Viewport.Width / 5) * random.Next(1, 6)) - ((game.GraphicsDevice.Viewport.Width / 5) / 2) - (Bounds.Width / 2);
+            Bounds.Y = 1080;
         }
 
         /// <summary>
@@ -72,12 +109,12 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">The game's GameTime</param>
         public void Update(GameTime gameTime)
         {
-            Bounds.Y -= 14;
+            Bounds.Y += ySpeed;
 
             if (Bounds.Y + Bounds.Height < 0)
             {
-                Bounds.X = game.GraphicsDevice.Viewport.Width / 2 - Bounds.Height / 2 + 100;
                 Bounds.Y = 1000;
+                Bounds.X = ((game.GraphicsDevice.Viewport.Width / 5) * random.Next(1, 6)) - ((game.GraphicsDevice.Viewport.Width / 5) / 2) - (Bounds.Width / 2);
             }
         }
 
