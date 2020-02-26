@@ -29,6 +29,8 @@ namespace MonoGameWindowsStarter
     /// </summary>
     public class Player
     {
+        Game1 game;
+
         // The speed of the walking animation
         const int FRAME_RATE = 100;
 
@@ -72,6 +74,7 @@ namespace MonoGameWindowsStarter
         /// <param name="frames">The sprite frames associated with the player</param>
         public Player(IEnumerable<Sprite> frames)
         {
+            //this.game = game;
             this.frames = frames.ToArray();
             animationState = PlayerAnimState.WalkingLeft;
         }
@@ -130,6 +133,15 @@ namespace MonoGameWindowsStarter
                     currentFrame = (int)Math.Floor(animationTimer.TotalMilliseconds / FRAME_RATE) + 1;
                     break;
 
+            }
+
+            if(Position.X < 0)
+            {
+                Position.X = 0;
+            }
+            if(Position.X > 2048)
+            {
+                Position.X = 2048;
             }
         }
 

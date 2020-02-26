@@ -15,7 +15,7 @@ namespace MonoGameWindowsStarter
         SpriteBatch spriteBatch;
         SpriteSheet sheet;
 
-        Bullet bullet;
+        //Bullet bullet;
         Bullet normalBullet;
         Bullet fastBullet;
         Bullet bombBullet;
