@@ -27,6 +27,8 @@ namespace MonoGameWindowsStarter
     {
         Type bulletType;
 
+        Color bulletTint;
+
         /// <summary>
         /// The game object
         /// </summary>
@@ -59,13 +61,18 @@ namespace MonoGameWindowsStarter
             if (id == 1)
             {
                 bulletType = Type.Normal;
+                bulletTint = Color.White;
             }
             else if (id == 2)
             {
                 bulletType = Type.Fast;
+                bulletTint = Color.Blue;
             }
             else if (id == 3)
+            {
                 bulletType = Type.Bomb;
+                bulletTint = Color.Red;
+            }
 
             switch (bulletType)
             {
@@ -127,7 +134,7 @@ namespace MonoGameWindowsStarter
         /// </param>
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, Bounds, Color.White);
+            spriteBatch.Draw(texture, Bounds, bulletTint);
         }
     }
 }

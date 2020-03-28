@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MonoGameWindowsStarter
@@ -14,8 +15,10 @@ namespace MonoGameWindowsStarter
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteSheet sheet;
+        SpriteSheet projSheet;
 
         //Bullet bullet;
+        List<Bullet> bullets;
         Bullet normalBullet;
         Bullet fastBullet;
         Bullet bombBullet;
@@ -42,7 +45,13 @@ namespace MonoGameWindowsStarter
         Texture2D background;
         Rectangle backgroundFrame;
 
+        Projectile proj;
 
+        ParticleSystem normalParticle;
+        ParticleSystem fastParticle;
+        ParticleSystem bombParticle;
+        Texture2D particleTexture;
+        Random random = new Random();
 
         public Game1()
         {
@@ -115,10 +124,98 @@ namespace MonoGameWindowsStarter
             var t = Content.Load<Texture2D>("TestSpriteSheet");
             sheet = new SpriteSheet(t, 79, 85, 0, 0);
 
+            var r = Content.Load<Texture2D>("BulletUp");
+            projSheet = new SpriteSheet(r, 50, 200, 0, 0);
 
             // Create the player with the corresponding frames from the spritesheet
             var playerFrames = from index in Enumerable.Range(0, 9) select sheet[index];
             player = new Player(playerFrames);
+
+            var projFrames = from index in Enumerable.Range(0, 1) select projSheet[index];
+            //proj = new Projectile(projFrames);
+
+            // TODO: use this.Content to load your game content here
+            particleTexture = Content.Load<Texture2D>("Particle");
+            normalParticle = new ParticleSystem(this.GraphicsDevice, 1000, particleTexture);
+            fastParticle = new ParticleSystem(this.GraphicsDevice, 1000, particleTexture);
+            bombParticle = new ParticleSystem(this.GraphicsDevice, 1000, particleTexture);
+
+            // Set the SpawnParticle method
+            normalParticle.SpawnParticle = (ref Particle particle) =>
+            {
+                //MouseState mouse = Mouse.GetState();
+                particle.Position = new Vector2(normalBullet.Bounds.X + normalBullet.Bounds.Width/2 - 10, normalBullet.Bounds.Y + normalBullet.Bounds.Height - 10);
+                particle.Velocity = new Vector2(
+                    MathHelper.Lerp(-50, 50, (float)random.NextDouble()), // X between -50 and 50
+                    MathHelper.Lerp(0, 100, (float)random.NextDouble()) // Y between 0 and 100
+                    );
+                particle.Acceleration = 0.1f * new Vector2(0, (float)-random.NextDouble());
+                particle.Color = Color.LightGoldenrodYellow;
+                particle.Scale = 1f;
+                particle.Life = 1.0f;
+            };
+
+            fastParticle.SpawnParticle = (ref Particle particle) =>
+            {
+                //MouseState mouse = Mouse.GetState();
+                particle.Position = new Vector2(fastBullet.Bounds.X + fastBullet.Bounds.Width / 2 - 15, fastBullet.Bounds.Y + fastBullet.Bounds.Height - 20);
+                particle.Velocity = new Vector2(
+                    MathHelper.Lerp(-50, 50, (float)random.NextDouble()), // X between -50 and 50
+                    MathHelper.Lerp(0, 100, (float)random.NextDouble()) // Y between 0 and 100
+                    );
+                particle.Acceleration = 0.1f * new Vector2(0, (float)-random.NextDouble());
+                particle.Color = Color.DarkBlue;
+                particle.Scale = 2.5f;
+                particle.Life = 1.0f;
+            };
+
+            bombParticle.SpawnParticle = (ref Particle particle) =>
+            {
+                //MouseState mouse = Mouse.GetState();
+                particle.Position = new Vector2(bombBullet.Bounds.X + bombBullet.Bounds.Width / 2 - 15, bombBullet.Bounds.Y + bombBullet.Bounds.Height - 20);
+                particle.Velocity = new Vector2(
+                    MathHelper.Lerp(-50, 50, (float)random.NextDouble()), // X between -50 and 50
+                    MathHelper.Lerp(0, 100, (float)random.NextDouble()) // Y between 0 and 100
+                    );
+                particle.Acceleration = 0.1f * new Vector2(0, (float)-random.NextDouble());
+                particle.Color = Color.Red;
+                particle.Scale = 2f;
+                particle.Life = 0.5f;
+            };
+
+            // Set the UpdateParticle method
+            normalParticle.UpdateParticle = (float deltaT, ref Particle particle) =>
+            {
+                particle.Velocity += deltaT * particle.Acceleration;
+                particle.Position += deltaT * particle.Velocity;
+                particle.Scale -= deltaT;
+                particle.Life -= deltaT;
+            };
+
+            fastParticle.UpdateParticle = (float deltaT, ref Particle particle) =>
+            {
+                particle.Velocity += deltaT * particle.Acceleration;
+                particle.Position += deltaT * particle.Velocity;
+                particle.Scale -= deltaT;
+                particle.Life -= deltaT;
+            };
+
+            bombParticle.UpdateParticle = (float deltaT, ref Particle particle) =>
+            {
+                particle.Velocity += deltaT * particle.Acceleration;
+                particle.Position += deltaT * particle.Velocity;
+                particle.Scale -= deltaT;
+                particle.Life -= deltaT;
+            };
+
+            normalParticle.Emitter = new Vector2(100, 100);
+            normalParticle.SpawnPerFrame = 4;
+
+            fastParticle.Emitter = new Vector2(100, 100);
+            fastParticle.SpawnPerFrame = 8;
+
+            bombParticle.Emitter = new Vector2(100, 100);
+            bombParticle.SpawnPerFrame = 4;
         }
 
         /// <summary>
@@ -150,6 +247,7 @@ namespace MonoGameWindowsStarter
             fastBullet.Update(gameTime);
             bombBullet.Update(gameTime);
             player.Update(gameTime);
+            //proj.Update(gameTime);
 
             if (player.Bounds.CollidesWith(normalBullet.Bounds) || player.Bounds.CollidesWith(fastBullet.Bounds) || player.Bounds.CollidesWith(bombBullet.Bounds))
             {
@@ -172,6 +270,11 @@ namespace MonoGameWindowsStarter
             oldKeyboardState = newKeyboardState;
             //var size = spriteFont.MeasureString("Use Arrow Keys to Navigate");
 
+            // TODO: Add your update logic here
+            normalParticle.Update(gameTime);
+            fastParticle.Update(gameTime);
+            bombParticle.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -185,6 +288,11 @@ namespace MonoGameWindowsStarter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
+
+            // TODO: Add your drawing code here
+            normalParticle.Draw();
+            fastParticle.Draw();
+            bombParticle.Draw();
 
             spriteBatch.DrawString(
                 spriteFont,
@@ -206,6 +314,7 @@ namespace MonoGameWindowsStarter
             bombBullet.Draw(spriteBatch);
 
             player.Draw(spriteBatch);
+            //proj.Draw(spriteBatch);
 
             lane0.Draw(spriteBatch);
             lane1.Draw(spriteBatch);

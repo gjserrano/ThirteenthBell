@@ -29,7 +29,9 @@ namespace MonoGameWindowsStarter
     /// </summary>
     public class Player
     {
-        Game1 game;
+        List<Bullet> bullets;
+
+        ParticleSystem dustTrail;
 
         // The speed of the walking animation
         const int FRAME_RATE = 100;
@@ -76,7 +78,7 @@ namespace MonoGameWindowsStarter
         {
             //this.game = game;
             this.frames = frames.ToArray();
-            animationState = PlayerAnimState.WalkingLeft;
+            animationState = PlayerAnimState.Idle;
         }
 
         /// <summary>
@@ -101,6 +103,11 @@ namespace MonoGameWindowsStarter
             else
             {
                 animationState = PlayerAnimState.Idle;
+            }
+
+            if(keyboard.IsKeyDown(Keys.Space))
+            {
+                //bullets.Add(new Bullet(game, ))
             }
 
             // Apply animations
